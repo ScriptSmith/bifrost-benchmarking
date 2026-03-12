@@ -1,0 +1,17 @@
+[server]
+port = 8081
+
+[providers]
+default_provider = "mocker"
+
+[providers.mocker]
+type = "open_ai"
+base_url = "http://localhost:8000/v1"
+api_key = "sk-test"
+
+[auth.mode]
+type = "none"
+
+[observability.logging]
+level = "warn"
+format = "compact"

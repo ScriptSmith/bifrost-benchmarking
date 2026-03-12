@@ -71,7 +71,7 @@ func main() {
 	timeout := flag.Int("timeout", 300, "Request timeout in seconds (should be duration + expected backend latency)")
 	outputFile := flag.String("output", "results.json", "Output file for results")
 	cooldown := flag.Int("cooldown", 60, "Cooldown period between tests in seconds")
-	provider := flag.String("provider", "", "Specific provider to benchmark (bifrost, portkey, braintrust, llmlite, openrouter)")
+	provider := flag.String("provider", "", "Specific provider to benchmark (bifrost, hadrian, litellm, portkey, helicone, openai)")
 	bigPayload := flag.Bool("big-payload", false, "Use a bigger payload")
 	model := flag.String("model", "gpt-4o-mini", "Model to use")
 	suffix := flag.String("suffix", "v1", "Suffix to add to the url route")
@@ -289,6 +289,14 @@ func initializeProviders(bigPayload bool, model string, suffix string, apiPath s
 			Port:            os.Getenv("HELICONE_PORT"),
 			Payload:         bifrostPayload, // Use bifrost payload format (with prefix)
 			PayloadTemplate: createTemplate(bifrostPayload),
+			RequestType:     requestType,
+		},
+		{
+			Name:            "Hadrian",
+			Endpoint:        fmt.Sprintf("http://%s:%s/api/%s/", host, os.Getenv("HADRIAN_PORT"), suffix) + apiPath,
+			Port:            os.Getenv("HADRIAN_PORT"),
+			Payload:         openaiPayload,
+			PayloadTemplate: createTemplate(openaiPayload),
 			RequestType:     requestType,
 		},
 	}

@@ -1,6 +1,8 @@
-# Hitter - Load Testing Tool for Bifrost
+# AI Gateway Benchmark Suite
 
-A high-performance load testing tool for testing Bifrost's chat completion endpoints with support for multiple models, providers, and streaming responses.
+A high-performance load testing tool for benchmarking AI gateways (Bifrost, Hadrian, LiteLLM, Portkey, Helicone) using a mock LLM server to measure pure proxy overhead.
+
+Forked from [maximhq/bifrost-benchmarking](https://github.com/maximhq/bifrost-benchmarking).
 
 ## Features
 
@@ -54,6 +56,44 @@ go run main.go [flags]
   --rps 100 \
   --duration 60s \
   --virtual-key sk-bf-xxxxx
+```
+
+## Benchmarking Hadrian
+
+### Quick Start
+
+```bash
+./run-hadrian-bench.sh
+```
+
+This builds Hadrian with the `tiny` feature profile (minimal binary, OpenAI provider only), starts the mocker and Hadrian, runs the benchmark, and cleans up.
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HADRIAN_SRC` | `~/src/hadrian/hadrian` | Path to Hadrian source |
+| `HADRIAN_PORT` | `8081` | Port for Hadrian |
+| `MOCKER_PORT` | `8000` | Port for the mock LLM server |
+| `RATE` | `1000` | Requests per second |
+| `DURATION` | `30` | Test duration in seconds |
+| `OUTPUT` | `results.json` | Output file |
+
+### Manual Setup
+
+```bash
+# 1. Build Hadrian
+cd ~/src/hadrian/hadrian
+cargo build --release --no-default-features --features tiny
+
+# 2. Start mocker
+cd mocker && go run main.go -host 0.0.0.0 -port 8000
+
+# 3. Start Hadrian
+RUST_LOG=warn ./target/release/hadrian --config hadrian-bench.toml --no-browser
+
+# 4. Run benchmark
+go run benchmark.go --provider hadrian --rate 1000 --duration 30
 ```
 
 ## Command-Line Flags
